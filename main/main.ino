@@ -12,9 +12,9 @@ void setup() {
 
 void loop() {
 
-  if(checkConnectionAvailable(&WiFiMulti)) {
-    sendDataToServer();
-  }
+  // if(checkConnectionAvailable(&WiFiMulti)) {
+    // sendDataToServer();
+  // }
 
   delay(500);
   

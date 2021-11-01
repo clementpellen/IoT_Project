@@ -1,3 +1,5 @@
+#include "./WifiSettings/WifiSettings.cpp"
+
 void networkConnection(ESP8266WiFiMulti* WiFiMulti) {
     for (uint8_t t = 4; t > 0; t--) {
         Serial.printf("[SETUP] WAIT %d...\n", t);
@@ -6,7 +8,10 @@ void networkConnection(ESP8266WiFiMulti* WiFiMulti) {
     }
 
     WiFi.mode(WIFI_STA);
-    WiFiMulti->addAP("Bbox-22111971", "22111971");
+
+    loadWifiNetwork();
+
+    // WiFiMulti->addAP("Bbox-22111971", "22111971");
 }
 
 boolean checkConnectionAvailable(ESP8266WiFiMulti* WiFiMulti) {

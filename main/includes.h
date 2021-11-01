@@ -8,5 +8,3 @@
 #include <WiFiClient.h>
 
 #include "basicHttpClient.h"
-
-#include "WifiSettings.cpp"
