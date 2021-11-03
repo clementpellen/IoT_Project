@@ -1,4 +1,4 @@
-#include "./WifiSettings/WifiSettings.cpp"
+#include "WifiSettings/loadWifiSettings.h"
 
 void networkConnection(ESP8266WiFiMulti* WiFiMulti) {
     for (uint8_t t = 4; t > 0; t--) {
@@ -9,8 +9,11 @@ void networkConnection(ESP8266WiFiMulti* WiFiMulti) {
 
     WiFi.mode(WIFI_STA);
 
-    loadWifiNetwork();
+    WifiSettings wifi_network;
 
+    wifi_network = loadWifiNetwork(ChooseWifiNetworkInSerial());
+    wifi_network.displayWifiSettings();
+    
     // WiFiMulti->addAP("Bbox-22111971", "22111971");
 }
 
