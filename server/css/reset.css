@@ -1,3 +1,10 @@
+/*
+	02/11/2021
+	server/css/reset.css
+	FICHIER POUR PASSER OUTRE LES DIFFERENCES 
+	D'AFFICHAGE ENTRE LES NAVIGUATEURS
+*/
+
 * {
 	margin: 0;
 	padding: 0;

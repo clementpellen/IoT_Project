@@ -1,3 +1,10 @@
+<!-- 
+	02/11/2021
+	server/php/head.php
+	CODE REQUIRE A CHAQUE DEBUT DE PAGE PHP AFIN
+	DE NE PAS SE REPETER POUR LES DIFFERENTES PAGES
+-->
+
 <?php
 	if(!isset($_SESSION)) { 
 		session_start(); 

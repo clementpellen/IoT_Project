@@ -1,3 +1,10 @@
+<!-- 
+	03/11/2021
+	server/server.php
+	CODE DE LA PAGE D'INTERFACE POUR AVOIR LES
+    INFORMATIONS SUR LES MACHINES EN DIRECT
+-->
+
 <?php 
     require("php/head.php");
 
@@ -102,3 +109,7 @@
          <h1> &#128291 Trucs en plus  </h1>
     </section>
 </main>
+
+<?php 
+    require("php/foot.php");
+?>
