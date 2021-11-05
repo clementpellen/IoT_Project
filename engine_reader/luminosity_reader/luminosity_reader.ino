@@ -13,15 +13,11 @@
 
 #include <HTTPClient.h>
 
-#include "esp32HttpClient.h"
-#include "luminosity_reader_lib.h"
-
-
 #define USE_SERIAL Serial
 
 
 // Déclaration de l'objet Wifi
-WiFiMulti wifiMulti;
+WiFiMulti WiFiMulti;
 
 // Déclaration de l'identifiant de la machine
 const int engine_id = 1;
@@ -41,6 +37,129 @@ bool engine_state = false;
 
 
 
+//////////////////////////
+//                      //
+//    Esp32HTTPClient   //
+//                      //
+//////////////////////////
+
+void networkConnection() {
+  
+    USE_SERIAL.println();
+    USE_SERIAL.println();
+    USE_SERIAL.println();
+
+    for (uint8_t t = 4; t > 0; t--)
+    {
+        USE_SERIAL.printf("[SETUP] WAIT %d...\n", t);
+        USE_SERIAL.flush();
+        delay(1000);
+    }
+
+    WiFiMulti.addAP("SFR-75e0", "QJDXPVQLQDU4");
+}
+
+boolean checkConnectionAvailable()
+{
+    // wait for WiFi connection
+    if ((WiFiMulti.run() == WL_CONNECTED))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+void sendDataToServer(String server_request)
+{
+
+    HTTPClient http;
+
+    USE_SERIAL.print("[HTTP] begin...\n");
+    // configure traged server and url
+    http.begin(server_request); //HTTPS
+
+    USE_SERIAL.print("[HTTP] GET...\n");
+    // start connection and send HTTP header
+    int httpCode = http.GET();
+
+    // httpCode will be negative on error
+    if (httpCode > 0)
+    {
+        // HTTP header has been send and Server response header has been handled
+        USE_SERIAL.printf("[HTTP] GET... code: %d\n", httpCode);
+
+        // file found at server
+        if (httpCode == HTTP_CODE_OK)
+        {
+            String payload = http.getString();
+            USE_SERIAL.println(payload);
+        }
+    }
+    else
+    {
+        USE_SERIAL.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
+    }
+
+    //Serial.println("");
+    //Serial.println("Inclusion réussie");
+    //Serial.println(server_request);
+    //Serial.println("");
+}
+
+
+
+//////////////////////////
+//                      //
+//  LUMINOSITY READER   //
+//                      //
+//////////////////////////
+
+////// LUMINOSITY FUNCTIONS /////
+
+void readLuminosity() {
+  input_luminosity = analogRead(input_luminosity_pin);
+}
+
+void mapLuminosity() {
+  mapped_luminosity = map(input_luminosity, 0, 4000, 0, 100);
+}
+
+void displayLuminosity() {
+  Serial.println("Luminosité d'entrée");
+  Serial.println(input_luminosity);
+}
+
+void displayMappedLuminosity() {
+  Serial.println("Niveau de luminosité");
+  Serial.print(mapped_luminosity);
+  Serial.println("%");
+}
+
+void defineEngineState() {
+  mapped_luminosity > 50 ? engine_state=true : engine_state=false;
+}
+
+void displayEngineState() {
+  Serial.println("Etat de la machine");
+  if(engine_state == true)
+    Serial.println("HIGH");
+  else 
+    Serial.println("LOW");
+}
+
+void presentEngineState() {
+  readLuminosity();
+  mapLuminosity();
+  defineEngineState();
+  
+  displayMappedLuminosity();
+  displayEngineState();
+  Serial.println("");
+}
+
 
 void setup() {
 
@@ -48,7 +167,7 @@ void setup() {
 
   pinMode(input_luminosity_pin, INPUT);
 
-  networkConnection(&WiFiMulti);
+  networkConnection();
 
 }
 
@@ -61,7 +180,7 @@ void loop() {
 
   // Ajouter ici les variables à passer dans l'url
 
-  if(checkConnectionAvailable(&WiFiMulti)) {
+  if(checkConnectionAvailable()) {
     sendDataToServer(server_request);
   }
 
