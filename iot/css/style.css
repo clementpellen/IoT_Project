@@ -138,12 +138,6 @@ button:focus {
 	animation: progress 1s ease-out forwards;
 }
 
-@keyframes progress {
-	0% {
-		stroke-dasharray: 0 100;
-	}
-}
-
 .circular-chart.orange .circle {
 	stroke: var(--red);
 }

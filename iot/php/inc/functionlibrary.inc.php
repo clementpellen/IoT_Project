@@ -32,7 +32,7 @@
 	}
 
 	// activer le trigger de changement
-	function activateTrigger($conn) {
+	function setTrigger($conn, $state) {
 		$sql = "UPDATE modification_trigger SET modified = ?;";
 		$stmt = mysqli_stmt_init($conn);
 		if(!mysqli_stmt_prepare($stmt, $sql)) {
@@ -40,8 +40,7 @@
 			exit();
 		}
 
-		$var = false;
-		mysqli_stmt_bind_param($stmt, "i", $var);
+		mysqli_stmt_bind_param($stmt, "i", $state);
 		mysqli_stmt_execute($stmt);
 
 		$resultData = mysqli_stmt_get_result($stmt);
@@ -100,17 +99,13 @@
 	}
 
 	// recréer un clef pour la hash et la comparer avec le token de sécurité
-	function tokenIsValid($token) {
+	function tokenIsValid($token, $tic) {
 		// on crée un string unique et hardcodé
 		$salt = "iotprojet";
-		$time = gettimeofday();
 		// on genère le hash avec la méthode md5 pour pouvoir le comparer à celui généré par l'ESP32 de la meme manière
-		$key = md5($salt . $time["sec"]);
+		$key = md5($salt . $tic);
 		// on return true ou false en fonction de l'équivalence entre les deux tokens
-		return true;
-		//return $key == $token;
-
-		// faire une boucle for pour tester avec une range de 2 secondes avant le timestamp au max
+		return $key == $token;
 	}
 
 	// vérifier que la machine existe bien dans la bdd
@@ -216,4 +211,46 @@
 		$b = new DateTime("@$sec");
 		$interval =  date_diff($a, $b);
 		return $interval->format('%y ans %m mois %d jours %h h %i min %s sec');
+	}
+
+	// 
+	function getPourcentage($engineId) {
+		
+		$pourcentage = 0;
+		$bufferOn = 0; $bufferOff = 0;
+		$totalOff = 0; $totalOn = 0;
+		$lastState = true;
+
+		if($_SESSION["engines"][$engineId]["time_ranges"] != false) {
+			// pour pouvoir modifier dans un foreach on doit utiliser une référence
+			foreach ($_SESSION["engines"][$engineId]["time_ranges"] as &$time_range) {
+				// si c'est on
+				if($time_range["is_on"]) {
+					$bufferOn = strtotime($time_range["timestamp"]);
+					if($bufferOff != 0) {
+						$totalOff = $bufferOff - $bufferOn;
+					}
+					$lastState = true;
+				}
+				// si c'est off
+				else {
+					$bufferOff = strtotime($time_range["timestamp"]);
+					if($bufferOn != 0) {
+						$totalOn = $bufferOn - $bufferOff;
+					}
+					$lastState = false;
+				}
+			}
+
+			if($lastState) {
+				$totalOn = $bufferOn - time();
+			}
+			else {
+				$totalOff = $bufferOff - time();
+			}
+
+			$pourcentage = $totalOn / $totalOff;
+			$pourcentage = number_format($pourcentage, 1, '.', '');
+		}
+		return $pourcentage;
 	}

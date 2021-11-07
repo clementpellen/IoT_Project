@@ -11,20 +11,19 @@
 	// appel de la fonction pour charger les données
 	include("php/inc/reloaddata.inc.php");
 
-	$firstPourcentage = 78;
-	$secondPourcentage = 25;
-	$thirdPourcentage = 7;
-	$machineIsOn = false;
+	$firstPourcentage =  getPourcentage(1);
+	$secondPourcentage =  getPourcentage(2);
+	$thirdPourcentage =  getPourcentage(3);
 ?>
 
-<!-- 
-	Quand le trigger est activé faire un code js pour recharger la page 
-
-	if(checkTrigger($conn)) {}
-
-	// on repasse la detente à FALSE pour signifier que le changement a été prit en compte et que on attend le prochain
-	activateTrigger($conn);
--->
+<script>
+    // toutes les secondes on appel la fonction pour refresh la page
+	window.setInterval('refresh()', 1000); 	
+	function refresh() {
+		// on recharge la page
+		window .location.reload();
+    }
+</script>
 
 <main>
 	<aside>
@@ -62,23 +61,12 @@
 			<h2> &#128198 date dernier changement :</h2> <?= $_SESSION['engines']["2"]["time_ranges"] != false ?
 				end($_SESSION['engines']["2"]["time_ranges"])["timestamp"] : "aucun changement" ?>
 		</section>
-		<!-- <svg class="machine-on-off" viewBox="0 0 14.2 20.6">
-			<g transform="translate(-37.1 -88.9)">
-				<path d="m46.7 
-					88.9c-0.285-0.0043-0.468 0.213-0.468 0.213l-8.99 11.7s-0.308 
-					0.34-0.141 0.716c0.167 0.376 0.547 0.363 0.547 0.363l5.52-4e-3 
-					-2.17 6.71s-0.206 0.485 0.251 0.754c0.457 0.269 0.783-0.119 
-					0.783-0.119l8.99-11.7s0.307-0.34 0.14-0.716c-0.167-0.376-0.547-0.363-0.547-0.363l-5.52 
-					0.0041 2.17-6.71s0.206-0.485-0.251-0.754c-0.114-0.0672-0.22-0.0931-0.315-0.0946z"
-				fill="<?= ($machineIsOn ? "var(--yellow)" : "var(--dark)")?>"/>
-			</g>
-		</svg> -->
-
 </aside>
 	<section id="info">
 		<h1> &#128202 Infos Machines </h1>
 		<br>
-
+		<br>
+		<br>
 		<div class="flex-wrapper">
 			<div class="single-chart">
 				<svg viewBox="0 0 36 36" class="circular-chart orange">
@@ -159,9 +147,9 @@
 	<section id="truc">
 		<h1> &#128291 Trucs en plus  </h1>
 		<br>
-		Reload à la mains
+		Reload à la mains<br>
 		Passer en mode edition et modifier les noms des machines
-		modifier les informations d'emplacement pour les ajouter dans la bdd
+		modifier les informations d'emplacement pour les ajouter dans la bdd<br>
 	</section>
 </main>
 
