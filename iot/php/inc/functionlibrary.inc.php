@@ -205,7 +205,7 @@
 		
 	}
 
-	// convert into Years, Months, Days, Hours, Minutes and Seconds
+	//
 	function timestampToTime($sec){
 		$a = new DateTime("@0");
 		$b = new DateTime("@$sec");

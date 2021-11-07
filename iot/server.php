@@ -18,7 +18,7 @@
 
 <script>
     // toutes les secondes on appel la fonction pour refresh la page
-	window.setInterval('refresh()', 1000); 	
+	window.setInterval('refresh()', 3000); 	
 	function refresh() {
 		// on recharge la page
 		window .location.reload();
@@ -147,9 +147,19 @@
 	<section id="truc">
 		<h1> &#128291 Trucs en plus  </h1>
 		<br>
-		Reload à la mains<br>
-		Passer en mode edition et modifier les noms des machines
-		modifier les informations d'emplacement pour les ajouter dans la bdd<br>
+		<h2> &#9201 Reload de la page toute les 3 secondes</h2>
+		<br>
+		<br>
+		<h2> &#128681 Réalisé par :</h2>
+		Arnaud Bustillo, Quentin Desautel, Lehna Moussaoui et Clément Pellen
+		<br>
+		<br>
+		<h2> &#128049 Lien du Repo Git :</h2>
+		<a href="https://github.com/clementpellen/IoT_Project"> https://github.com/clementpellen/IoT_Project </a>
+		<br>
+		<br>
+		<h2> &#128270 Sources :</h2>
+		<a href="https://www.corner.soccer/iot/sources.php"> https://www.corner.soccer/iot/sources.php </a>
 	</section>
 </main>
 
