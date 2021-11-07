@@ -29,22 +29,38 @@
 <main>
 	<aside>
 		<section id="engine1">
-			<h1 style="float: right"><?= $_SESSION['engines']["1"]["is_on"] ? "&#9989" : "&#10060" ?></h1>
-			<h1> &#128223 <?= $_SESSION['engines']["1"]["name"]?> </h1>
+			<h1 style="float:right"><?= $_SESSION['engines']["1"]["is_on"] ? "&#9989" : "&#10060" ?></h1>
+			<h1> &#128223 <?= $_SESSION['engines']["1"]["name"]?></h1>
+			<span class="r"> Local 2 coté droit de la porte </span>
 			<br>
-			&#128205 Local 2 coté droit de la porte 
-			<br><br>
-			temps <?= $_SESSION['engines']["1"]["is_on"] ? "allumé" : "éteinte" ?> : <?= $_SESSION['engines']["1"]["is_on"]  ?>
 			<br>
-			date du dernier changement : 
+			<h2> &#128337 temps <?= $_SESSION['engines']["1"]["is_on"] ? "allumé" : "éteinte" ?> :</h2>
 			<br>
+			<span class="r"><?= getTimingSession(1) ?></span>
+			<br>
+			<h2> &#128281 temps de la dernière session :</h2>
+			<br>
+			<span class="r"><?= getPrevTimingSession(1) ?></span>
+			<br>
+			<h2> &#128198 date dernier changement :</h2> <?= $_SESSION['engines']["1"]["time_ranges"] != false ?
+				end($_SESSION['engines']["1"]["time_ranges"])["timestamp"] : "aucun changement" ?>
 		</section>
 		<section id="engine2">
-			 <h1 style="float: right"><?= $_SESSION['engines']["2"]["is_on"] ? "&#9989" : "&#10060" ?></h1>
-			 <h1> &#128250 <?= $_SESSION['engines']["2"]["name"]?>  </h1>
-			 <br>
-			 &#128205 Local 1 à coté du poteau central
-			<br><br>
+			<h1 style="float:right"><?= $_SESSION['engines']["2"]["is_on"] ? "&#9989" : "&#10060" ?></h1>
+			<h1> &#128250 <?= $_SESSION['engines']["2"]["name"]?></h1>
+			<span class="r"> Local 1 à coté du poteau central </span>
+			<br>
+			<br>
+			<h2> &#128337 temps <?= $_SESSION['engines']["2"]["is_on"] ? "allumé" : "éteinte" ?> :</h2>
+			<br>
+			<span class="r"><?= getTimingSession(2) ?></span>
+			<br>
+			<h2> &#128281 temps de la dernière session :</h2>
+			<br>
+			<span class="r"><?= getPrevTimingSession(2) ?></span>
+			<br>
+			<h2> &#128198 date dernier changement :</h2> <?= $_SESSION['engines']["2"]["time_ranges"] != false ?
+				end($_SESSION['engines']["2"]["time_ranges"])["timestamp"] : "aucun changement" ?>
 		</section>
 		<!-- <svg class="machine-on-off" viewBox="0 0 14.2 20.6">
 			<g transform="translate(-37.1 -88.9)">
@@ -123,11 +139,21 @@
 		</div>
 	</section>
 	<section id="engine3">
-		<h1 style="float: right"><?= $_SESSION['engines']["3"]["is_on"] ? "&#9989" : "&#10060" ?></h1>
-		<h1> &#128225 <?= $_SESSION['engines']["3"]["name"]?>  </h1>
+		<h1 style="float:right"><?= $_SESSION['engines']["3"]["is_on"] ? "&#9989" : "&#10060" ?></h1>
+		<h1> &#128225 <?= $_SESSION['engines']["3"]["name"]?></h1>
+		<span class="r"> Local 2 coté gauche de la porte </span>
 		<br>
-		&#128205 Local 2 coté gauche de la porte 
-		<br><br>
+		<br>
+		<h2> &#128337 temps <?= $_SESSION['engines']["3"]["is_on"] ? "allumé" : "éteinte" ?> :</h2>
+		<br>
+		<span class="r"><?= getTimingSession(3) ?></span>
+		<br>
+		<h2> &#128281 temps de la dernière session :</h2>
+		<br>
+		<span class="r"><?= getPrevTimingSession(3) ?></span>
+		<br>
+		<h2> &#128198 date dernier changement :</h2><?= $_SESSION['engines']["3"]["time_ranges"] != false ?
+			end($_SESSION['engines']["3"]["time_ranges"])["timestamp"] : "aucun changement" ?>
 
 	</section>
 	<section id="truc">

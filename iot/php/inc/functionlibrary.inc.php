@@ -184,3 +184,36 @@
 		$b = strtotime($b["timestamp"]);
 		return $a - $b;
 	}
+
+	function getPrevTimingSession($engineId) {
+		if($_SESSION["engines"][$engineId]["time_ranges"] != false) {
+			$a = end($_SESSION["engines"][$engineId]["time_ranges"]);
+			$b = prev($_SESSION["engines"][$engineId]["time_ranges"]);
+			return timestampToTime(cmp($a, $b));
+		}
+		else {
+			return "aucun changement";
+		}
+		
+	}
+
+	function getTimingSession($engineId) {
+		if($_SESSION["engines"][$engineId]["time_ranges"] != false) {
+			$a = time();
+			$b = end($_SESSION["engines"][$engineId]["time_ranges"]);
+			$b = strtotime($b["timestamp"]);
+			return timestampToTime($a-$b);
+		}
+		else {
+			return "aucun changement";
+		}
+		
+	}
+
+	// convert into Years, Months, Days, Hours, Minutes and Seconds
+	function timestampToTime($sec){
+		$a = new DateTime("@0");
+		$b = new DateTime("@$sec");
+		$interval =  date_diff($a, $b);
+		return $interval->format('%y ans %m mois %d jours %h h %i min %s sec');
+	}
