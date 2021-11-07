@@ -1,7 +1,7 @@
 /**
  * 
  * Ce code réalise 3 tâches principales :
- *    - Lire la luminosité de l'indicateur de fonctionnement de la machine
+ *    - Lire la tension de la partie commande de la machine
  *    - Indiquer au serveur en ligne si la machine est en fonctionnement
  *    - Indiquer visuellement si la machine est en fonctionnement à l'aide d'une LED
  */
@@ -25,13 +25,13 @@ bool connection_established = false;
 // Déclaration de l'identifiant de la machine
 const int engine_id = 1;
 
-// Déclaration du pin chargé de lire la valeur de la luminosité 
-// du témoin de fonctionnement de la machine
-const int input_luminosity_pin = 35;
+// Déclaration du pin chargé de lire la valeur de la tension 
+// de la partie commande de la machine
+const int input_voltage_pin = 32;
 
-// Déclaration des variables de valeur de la luminosité (absolues et en %)
-int input_luminosity = 0;
-int mapped_luminosity = 0;
+// Déclaration des variables de valeur de la tension
+int input_voltage = 0;
+int mapped_voltage = 0;
 
 
 // VARIABLE DESIGNANT SI LA MACHINE    //
@@ -130,33 +130,31 @@ void sendDataToServer(String server_request)
 
 //////////////////////////
 //                      //
-//  LUMINOSITY READER   //
+//    VOLTAGE READER    //
 //                      //
 //////////////////////////
 
-////// LUMINOSITY FUNCTIONS /////
-
-void readLuminosity() {
-  input_luminosity = analogRead(input_luminosity_pin);
+void readVoltage() {
+  input_voltage = analogRead(input_voltage_pin);
 }
 
-void mapLuminosity() {
-  mapped_luminosity = map(input_luminosity, 0, 4000, 0, 100);
+void mapVoltage() {
+  mapped_voltage = map(input_voltage, 0, 5000, 0, 100);
 }
 
-void displayLuminosity() {
-  Serial.println("Luminosité d'entrée");
-  Serial.println(input_luminosity);
+void displayVoltage() {
+  Serial.println("Tension d'entrée");
+  Serial.println(input_voltage);
 }
 
-void displayMappedLuminosity() {
-  Serial.println("Niveau de luminosité");
-  Serial.print(mapped_luminosity);
+void displayMappedVoltage() {
+  Serial.println("Niveau de tension");
+  Serial.print(mapped_voltage);
   Serial.println("%");
 }
 
 bool determineEngineState() {
-  int new_mapped_luminosity = map(analogRead(input_luminosity_pin), 0, 5000, 0, 100);
+  int new_mapped_luminosity = map(analogRead(input_voltage_pin), 0, 5000, 0, 100);
   if(new_mapped_luminosity > 50) {
     return true;
   } 
@@ -165,9 +163,9 @@ bool determineEngineState() {
 }
 
 void defineEngineState() {
-  readLuminosity();
-  mapLuminosity();
-  mapped_luminosity > 50 ? engine_state=true : engine_state=false;
+  readVoltage();
+  mapVoltage();
+  mapped_voltage > 25 ? engine_state=true : engine_state=false;
 }
 
 void displayEngineState() {
@@ -181,7 +179,7 @@ void displayEngineState() {
 void presentEngineState() {
   defineEngineState();
   
-  displayMappedLuminosity();
+  displayMappedVoltage();
   displayEngineState();
   Serial.println("");
 }
@@ -395,7 +393,7 @@ void setup() {
 
   Serial.begin(9600);
 
-  pinMode(input_luminosity_pin, INPUT);
+  pinMode(input_voltage_pin, INPUT);
 
   pinMode(red_led_output, OUTPUT);
   pinMode(green_led_output, OUTPUT);
