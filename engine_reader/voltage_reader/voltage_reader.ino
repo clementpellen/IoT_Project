@@ -65,9 +65,9 @@ void networkConnection() {
         delay(1000);
     }
 
-    WiFiMulti.addAP("SFR-75e0", "QJDXPVQLQDU4");
+    //WiFiMulti.addAP("SFR-75e0", "QJDXPVQLQDU4");
     //WiFiMulti.addAP("SFR-75e0", "VIVELABAC!!");
-    //WiFiMulti.addAP("iPhone de Clement", "deholebranleur");
+    WiFiMulti.addAP("iPhone de Clement", "deholebranleur");
 }
 
 boolean checkConnectionAvailable()
@@ -89,6 +89,7 @@ boolean checkConnectionWasEstablished() {
     else 
       return false;
 }
+
 
 void sendDataToServer(String server_request)
 {
@@ -222,7 +223,7 @@ void initSave() {
     Serial.println("Error : Initialisation Sauvegarde");
   }
 
-  eraseSave("/local_save_data.txt");
+  //eraseSave("/local_save_data.txt");
 }
 
 void saveRequest(String file_name, String server_request) {
@@ -245,7 +246,7 @@ void saveRequest(String file_name, String server_request) {
   file_data.close();
 }
 
-void readSave(String file_name, String saved_requests_list[30]) {
+void readSave(String file_name, String saved_requests_list[30], int* nb_requests) {
   File read_file = SPIFFS.open(file_name);
 
   int i = 0;
@@ -255,11 +256,13 @@ void readSave(String file_name, String saved_requests_list[30]) {
   while(read_file.available())
   {
     int l = read_file.readBytesUntil('\n', request, sizeof(request));
-    request[l] = 0;
+    request[l-1] = 0; //-1 pour ne pas avoir d'espace vide à la fin de la chaîne
     //Serial.println(request);
     saved_requests_list[i] = String(request);
     ++i;
   }
+
+  *nb_requests = i;
   
   read_file.close();
 }
@@ -274,8 +277,8 @@ void eraseSave(String file_name) {
   SPIFFS.remove(file_name);
 }
 
-void sendSaveToServer(String saved_requests_list[30]) {
-  for(uint8_t i=0; i<30; ++i) {
+void sendSaveToServer(String saved_requests_list[30], int nb_requests) {
+  for(uint8_t i=0; i<nb_requests; ++i) {
     sendDataToServer(saved_requests_list[i]);
     delay(50);
   }
@@ -416,8 +419,10 @@ void loop() {
 
     if(!checkConnectionWasEstablished()) {
       String saved_requests_list[30];
-      readSave("/local_save_data.txt", saved_requests_list);
-      sendSaveToServer(saved_requests_list);
+      int nb_requests = 0;
+      readSave("/local_save_data.txt", saved_requests_list, &nb_requests);
+      sendSaveToServer(saved_requests_list, nb_requests);
+      eraseSave("/local_save_data.txt");
       showConnectionEstablished();
     }
 

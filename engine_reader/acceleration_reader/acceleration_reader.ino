@@ -511,9 +511,6 @@ void loop() {
     connection_established = true;
 
     defineEngineState();
-    displayEngineState();
-
-    displayMPUAcceleration();
 
     if(checkChangeEngineState()) {
 
@@ -551,6 +548,8 @@ void loop() {
     }
   }
 
+  displayEngineState();
+  displayMPUAcceleration();
   savePreviousAcceleration();
 
   delay(1000);
