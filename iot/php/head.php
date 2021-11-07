@@ -7,7 +7,10 @@
 
 <?php
 	if(!isset($_SESSION)) { 
-		session_start(); 
+		session_start();
+		require_once "inc/databasehandler.inc.php";
+		require_once "inc/functionlibrary.inc.php";
+		setTrigger($conn, true);
 	}
 ?>
 
