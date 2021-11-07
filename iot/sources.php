@@ -42,18 +42,16 @@
 	<br>
 	<br>
 	<div class ="r">
-		&#128205 blablblabla : <a style="color:var(--yellow)" href="https://www.php.net/manual/en/function.usort.php"> lien un d'exemple </a>
+		&#128205 vidéo lire dans un fichier à partir d'un ESP32 : <a style="color:var(--yellow)" href="https://www.youtube.com/watch?v=xc93ygUngmI"> https://www.youtube.com/watch?v=xc93ygUngmI </a>
 		<br>
 		<br>
-		&#128205 blablblabla : <a style="color:var(--yellow)" href="https://www.php.net/manual/en/function.usort.php"> lien un d'exemple </a>
+		&#128205 vidéo écrire dans un fichier à partir d'un ESP32 : <a style="color:var(--yellow)" href="https://www.youtube.com/watch?v=PAZUG7oSAwA"> https://www.youtube.com/watch?v=PAZUG7oSAwA </a>
 		<br>
 		<br>
-		&#128205 blablblabla : <a style="color:var(--yellow)" href="https://www.php.net/manual/en/function.usort.php"> lien un d'exemple </a>
+		&#128205 lire dans un fichier à partir d'un ESP32 : <a style="color:var(--yellow)" href="https://www.dfrobot.com/blog-1111.html?fbclid=IwAR1NZFwPOAbiiUM2PNw-9JpxGtwp8Vx5C6hAmGNZWhdxHDGQGnYpx6GNqUg"> https://www.dfrobot.com/blog-1111.html </a>
 		<br>
 		<br>
-		&#128205 blablblabla : <a style="color:var(--yellow)" href="https://www.php.net/manual/en/function.usort.php"> lien un d'exemple </a>
-		<br>
-		<br>
+		&#128205 écrire dans un fichier à partir d'un ESP32 : <a style="color:var(--yellow)" href="https://techtutorialsx.com/2018/08/05/esp32-arduino-spiffs-writing-a-file/?fbclid=IwAR3qK9Jc10mUOa7aIfvvTvTATiDUvVJn74x7ajy34IQYXOJz5_LQu4mG0tY"> https://techtutorialsx.com/2018/08/05/esp32-arduino-spiffs-writing-a-file/ </a>
 	</div>
 </section>
 <br>
@@ -66,7 +64,7 @@
 		&#128205 circular responsive : <a style="color:var(--red)" href="https://medium.com/@pppped/how-to-code-a-responsive-circular-percentage-chart-with-svg-and-css-3632f8cd7705"> https://medium.com/@pppped/how-to-code-a-responsive-circular-percentage-chart-with-svg-and-css-3632f8cd7705 </a>
 		<br>
 		<br>
-		&#128205 reset file : <a style="color:var(--red)"href="https://meyerweb.com/eric/tools/css/reset/"> https://meyerweb.com/eric/tools/css/reset/ </a>
+		&#128205 reset file : <a style="color:var(--red)" href="https://meyerweb.com/eric/tools/css/reset/"> https://meyerweb.com/eric/tools/css/reset/ </a>
 	</div>
 </section>
 
