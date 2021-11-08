@@ -180,6 +180,7 @@
 		return $a - $b;
 	}
 
+	// récup la différence de temps de la précedante session
 	function getPrevTimingSession($engineId) {
 		if($_SESSION["engines"][$engineId]["time_ranges"] != false) {
 			$a = end($_SESSION["engines"][$engineId]["time_ranges"]);
@@ -192,6 +193,7 @@
 		
 	}
 
+	// récup la différence de temps de la session
 	function getTimingSession($engineId) {
 		if($_SESSION["engines"][$engineId]["time_ranges"] != false) {
 			$a = time();
@@ -213,7 +215,7 @@
 		return $interval->format('%y ans %m mois %d jours %h h %i min %s sec');
 	}
 
-	// 
+	// récup le pourcentage et afficher
 	function getPourcentage($engineId) {
 		
 		$pourcentage = 0;
@@ -228,7 +230,7 @@
 				if($time_range["is_on"]) {
 					$bufferOn = strtotime($time_range["timestamp"]);
 					if($bufferOff != 0) {
-						$totalOff = $bufferOff - $bufferOn;
+						$totalOff = $bufferOn - $bufferOff;
 					}
 					$lastState = true;
 				}
@@ -236,17 +238,17 @@
 				else {
 					$bufferOff = strtotime($time_range["timestamp"]);
 					if($bufferOn != 0) {
-						$totalOn = $bufferOn - $bufferOff;
+						$totalOn = $bufferOff - $bufferOn;
 					}
 					$lastState = false;
 				}
 			}
 
 			if($lastState) {
-				$totalOn = $bufferOn - time();
+				$totalOn = time() - $bufferOn;
 			}
 			else {
-				$totalOff = $bufferOff - time();
+				$totalOff = time() - $bufferOff;
 			}
 
 			$pourcentage = $totalOn / $totalOff;

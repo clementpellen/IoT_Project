@@ -17,7 +17,7 @@
 ?>
 
 <script>
-    // toutes les secondes on appel la fonction pour refresh la page
+    // toutes les 3 secondes on appel la fonction pour refresh la page
 	window.setInterval('refresh()', 3000); 	
 	function refresh() {
 		// on recharge la page
