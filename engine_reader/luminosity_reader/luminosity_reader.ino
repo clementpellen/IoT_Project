@@ -126,7 +126,7 @@ void sendDataToServer(String server_request, String header)
     Serial.print("[HTTP] POST...\n");
     // start connection and send HTTP header
     // Specify content-type header
-    http.addHeader("Content-Type", "text/plain");
+    http.addHeader("Content-Type", "application/x-www-form-urlencoded");
     int httpCode = http.POST(header);
 
     // httpCode will be negative on error
@@ -340,7 +340,7 @@ void sendSaveToServer(String saved_requests_list[30], int nb_requests) {
     header = saved_requests_list[i].substring(saved_requests_list[i].indexOf('?')+1);
     request = saved_requests_list[i].substring(0, saved_requests_list[i].indexOf('?'));
     sendDataToServer(request, header);
-    delay(50);
+    delay(1000);
   }
 }
 
@@ -485,7 +485,7 @@ void loop() {
     if(checkChangeEngineState()) {
 
       // Déclaration de la chaîne de caractères à insérer dans l'url
-      String server_request = "https://corner.soccer/iot/server.php";
+      String server_request = "https://corner.soccer/iot/statement.php";
     
       defineEngineState();
 
@@ -509,7 +509,7 @@ void loop() {
     if(checkChangeEngineState()) {
 
       // Déclaration de la chaîne de caractères à insérer dans l'url
-      String server_request = "https://corner.soccer/iot/server.php";
+      String server_request = "https://corner.soccer/iot/statement.php";
     
       defineEngineState();
 
