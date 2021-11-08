@@ -15,6 +15,10 @@
 
 #include "SPIFFS.h"
 
+#include "MD5.h"
+
+#include "time.h"
+
 
 // Déclaration de l'objet Wifi
 WiFiMulti WiFiMulti;
@@ -24,6 +28,14 @@ bool connection_established = false;
 
 // Déclaration de l'identifiant de la machine
 const int engine_id = 1;
+
+// Déclaration du tic d'unicité de la requête
+unsigned int tic = 0;
+
+//déclaration des variables de connexion au serveur du timestamp
+const char* ntpServer = "pool.ntp.org";
+const long  gmtOffset_sec = 0;
+const int   daylightOffset_sec = 3600;
 
 // Déclaration du pin chargé de lire la valeur de la luminosité 
 // du témoin de fonctionnement de la machine
@@ -65,9 +77,7 @@ void networkConnection() {
         delay(1000);
     }
 
-    //WiFiMulti.addAP("SFR-75e0", "QJDXPVQLQDU4");
-    //WiFiMulti.addAP("SFR-75e0", "VIVELABAC!!");
-    WiFiMulti.addAP("iPhone de Clement", "deholebranleur");
+    WiFiMulti.addAP("iPhone de Clement", "ABCD1234");
 }
 
 boolean checkConnectionAvailable()
@@ -90,7 +100,21 @@ boolean checkConnectionWasEstablished() {
       return false;
 }
 
-void sendDataToServer(String server_request)
+String defineHeaderRequest() {
+  String header = "";
+  header += "token=";
+  header += String(generateToken());
+  header += "&tic=";
+  header += String(tic);
+  header += "&engine_id=";
+  header += String(engine_id);
+  header += "&is_on=";
+  header += String(engine_state);
+
+  return header;
+}
+
+void sendDataToServer(String server_request, String header)
 {
 
     HTTPClient http;
@@ -99,31 +123,64 @@ void sendDataToServer(String server_request)
     // configure traged server and url
     http.begin(server_request); //HTTPS
 
-    Serial.print("[HTTP] GET...\n");
+    Serial.print("[HTTP] POST...\n");
     // start connection and send HTTP header
-    int httpCode = http.GET();
+    // Specify content-type header
+    http.addHeader("Content-Type", "text/plain");
+    int httpCode = http.POST(header);
 
     // httpCode will be negative on error
     if (httpCode > 0)
     {
         // HTTP header has been send and Server response header has been handled
-        Serial.printf("[HTTP] GET... code: %d\n", httpCode);
+        Serial.printf("[HTTP] POST... code: %d\n", httpCode);
 
         // file found at server
         if (httpCode == HTTP_CODE_OK)
         {
-            //String payload = http.getString();
+            //String payload = http.POSTString();
             //Serial.println(payload);
             Serial.println("");
             Serial.println("Inclusion réussie");
             Serial.println(server_request);
+            Serial.println(header);
             Serial.println("");
         }
     }
     else
     {
-        Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
+        Serial.printf("[HTTP] POST... failed, error: %s\n", http.errorToString(httpCode).c_str());
     }
+}
+
+
+
+//////////////////////////
+//                      //
+//        HASHAGE       //
+//                      //
+//////////////////////////
+
+String generateToken() {
+  String key_string = "iotprojet";
+  key_string += String(tic);
+  //Serial.println(key_string);
+  char key[key_string.length()+1];
+  key_string.toCharArray(key, key_string.length()+1);
+  //Serial.println(key);
+  unsigned char* hash=MD5::make_hash(key);
+  //generate the digest (hex encoding) of our hash
+  char *md5str = MD5::make_digest(hash, 16);
+  //print it on our serial monitor
+  //Serial.println(md5str);
+  String md5string = md5str;
+  //Serial.println(md5string);
+  //Give the Memory back to the System if you run the md5 Hash generation in a loop
+  free(md5str);
+  //free dynamically allocated 16 byte hash from make_hash()
+  free(hash);
+
+  return String(md5string);
 }
 
 
@@ -202,11 +259,11 @@ void displayChangeEngineState() {
     Serial.println("HIGH");
   else 
     Serial.println("LOW");
-  Serial.print("Etat de la machine au tour de boucle prec. : ");
-  if(engine_state == true)
-    Serial.println("HIGH");
-  else 
-    Serial.println("LOW");
+  //Serial.print("Etat de la machine au tour de boucle prec. : ");
+  //if(engine_state == true)
+    //Serial.println("HIGH");
+  //else 
+    //Serial.println("LOW");
   Serial.println("");
 }
 
@@ -229,7 +286,6 @@ void initSave() {
 
 void saveRequest(String file_name, String server_request) {
   
-  //File file_data = SPIFFS.open(file_name, FILE_WRITE);
   File file_data = SPIFFS.open(file_name, FILE_APPEND);
 
   if(!file_data){
@@ -247,21 +303,23 @@ void saveRequest(String file_name, String server_request) {
   file_data.close();
 }
 
-void readSave(String file_name, String saved_requests_list[30]) {
+void readSave(String file_name, String saved_requests_list[30], int* nb_requests) {
   File read_file = SPIFFS.open(file_name);
 
   int i = 0;
 
-  char request[100];
+  char request[150];
     
   while(read_file.available())
   {
     int l = read_file.readBytesUntil('\n', request, sizeof(request));
-    request[l] = 0;
+    request[l-1] = 0; //-1 pour ne pas avoir d'espace vide à la fin de la chaîne
     //Serial.println(request);
     saved_requests_list[i] = String(request);
     ++i;
   }
+
+  *nb_requests = i;
   
   read_file.close();
 }
@@ -276,9 +334,12 @@ void eraseSave(String file_name) {
   SPIFFS.remove(file_name);
 }
 
-void sendSaveToServer(String saved_requests_list[30]) {
-  for(uint8_t i=0; i<30; ++i) {
-    sendDataToServer(saved_requests_list[i]);
+void sendSaveToServer(String saved_requests_list[30], int nb_requests) {
+  String request, header;
+  for(uint8_t i=0; i<nb_requests; ++i) {
+    header = saved_requests_list[i].substring(saved_requests_list[i].indexOf('?')+1);
+    request = saved_requests_list[i].substring(0, saved_requests_list[i].indexOf('?'));
+    sendDataToServer(request, header);
     delay(50);
   }
 }
@@ -361,15 +422,9 @@ void showEngineState() {
 }
 
 void showDefaultConnection() {
-  turnOffAllLeds();
-
-  delay(300);
-
   digitalWrite(red_led_output, HIGH);
   digitalWrite(green_led_output, HIGH);
   digitalWrite(blue_led_output, LOW);
-
-  delay(1000);
 }
 
 void showConnectionEstablished() {
@@ -418,8 +473,10 @@ void loop() {
 
     if(!checkConnectionWasEstablished()) {
       String saved_requests_list[30];
-      readSave("/local_save_data.txt", saved_requests_list);
-      sendSaveToServer(saved_requests_list);
+      int nb_requests = 0;
+      readSave("/local_save_data.txt", saved_requests_list, &nb_requests);
+      sendSaveToServer(saved_requests_list, nb_requests);
+      eraseSave("/local_save_data.txt");
       showConnectionEstablished();
     }
 
@@ -432,9 +489,9 @@ void loop() {
     
       defineEngineState();
 
-      // Ajouter ici les variables à passer dans l'url
+      String header = defineHeaderRequest();
       
-      sendDataToServer(server_request);
+      sendDataToServer(server_request, header);
 
     }
 
@@ -445,7 +502,7 @@ void loop() {
 
     connection_established = false;
 
-    //showDefaultConnection();
+    showDefaultConnection();
 
     Serial.println("Défaut de connexion !");
     
@@ -456,13 +513,18 @@ void loop() {
     
       defineEngineState();
 
-      // Ajouter ici les variables à passer dans l'url
+      String header = defineHeaderRequest();
+
+      server_request += "?";
+      server_request += header;
       
       saveRequest("/local_save_data.txt", server_request); 
 
     }
   }
 
+  ++tic;
+  
   delay(1000);
   
 }

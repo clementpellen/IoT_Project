@@ -114,12 +114,10 @@ String defineHeaderRequest() {
   return header;
 }
 
-void sendDataToServer(String server_request)
+void sendDataToServer(String server_request, String header)
 {
 
     HTTPClient http;
-
-    String header;
 
     Serial.print("[HTTP] begin...\n");
     // configure traged server and url
@@ -129,21 +127,18 @@ void sendDataToServer(String server_request)
     // start connection and send HTTP header
     // Specify content-type header
     http.addHeader("Content-Type", "text/plain");
-    header = defineHeaderRequest();
-    //header = "";
     int httpCode = http.POST(header);
-    //int httpCode = http.GET();
 
     // httpCode will be negative on error
     if (httpCode > 0)
     {
         // HTTP header has been send and Server response header has been handled
-        Serial.printf("[HTTP] GET... code: %d\n", httpCode);
+        Serial.printf("[HTTP] POST... code: %d\n", httpCode);
 
         // file found at server
         if (httpCode == HTTP_CODE_OK)
         {
-            //String payload = http.getString();
+            //String payload = http.POSTString();
             //Serial.println(payload);
             Serial.println("");
             Serial.println("Inclusion réussie");
@@ -263,11 +258,11 @@ void displayChangeEngineState() {
     Serial.println("HIGH");
   else 
     Serial.println("LOW");
-  Serial.print("Etat de la machine au tour de boucle prec. : ");
-  if(engine_state == true)
-    Serial.println("HIGH");
-  else 
-    Serial.println("LOW");
+  //Serial.print("Etat de la machine au tour de boucle prec. : ");
+  //if(engine_state == true)
+    //Serial.println("HIGH");
+  //else 
+    //Serial.println("LOW");
   Serial.println("");
 }
 
@@ -312,7 +307,7 @@ void readSave(String file_name, String saved_requests_list[30], int* nb_requests
 
   int i = 0;
 
-  char request[100];
+  char request[150];
     
   while(read_file.available())
   {
@@ -339,8 +334,11 @@ void eraseSave(String file_name) {
 }
 
 void sendSaveToServer(String saved_requests_list[30], int nb_requests) {
+  String request, header;
   for(uint8_t i=0; i<nb_requests; ++i) {
-    sendDataToServer(saved_requests_list[i]);
+    header = saved_requests_list[i].substring(saved_requests_list[i].indexOf('?')+1);
+    request = saved_requests_list[i].substring(0, saved_requests_list[i].indexOf('?'));
+    sendDataToServer(request, header);
     delay(50);
   }
 }
@@ -489,8 +487,10 @@ void loop() {
       String server_request = "https://corner.soccer/iot/server.php";
     
       defineEngineState();
+
+      String header = defineHeaderRequest();
       
-      sendDataToServer(server_request);
+      sendDataToServer(server_request, header);
 
     }
 
@@ -511,6 +511,11 @@ void loop() {
       String server_request = "https://corner.soccer/iot/server.php";
     
       defineEngineState();
+
+      String header = defineHeaderRequest();
+
+      server_request += "?";
+      server_request += header;
       
       saveRequest("/local_save_data.txt", server_request); 
 
