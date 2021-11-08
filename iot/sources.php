@@ -1,3 +1,9 @@
+<!-- 
+	08/11/2021
+	server/sources.php
+	LES SOURCES UTILISEES
+-->
+
 <?php 
 	require("php/head.php");
 ?>

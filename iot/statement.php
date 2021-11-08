@@ -1,5 +1,5 @@
 <!-- 
-	05/11/2021
+	08/11/2021
 	server/statement.php
 	PHP CALL POUR AJOUTER LES INFORMATIONS RECOLTEES
 	PAR L'ESP32 DANS LA BDD DE MANIERE SECURISEE
@@ -8,15 +8,21 @@
 <?php
 
 	$token = $_POST["token"];
-	$tic = $_POST["tic"];
+	$tic = intval($_POST["tic"]);
 
 	require_once "php/inc/functionlibrary.inc.php";
 
 	if(tokenIsValid($token, $tic)) {
 		
-		$engineId = $_POST["engine_id"];
-		$isOn = $_POST["is_on"];
-		$timestamp = $_POST["timestamp"];
+		$engineId = intval($_POST["engine_id"]);
+		$isOn = intval($_POST["is_on"]);
+		$timestamp = date("Y-m-d h:m:s",time());
+
+		var_dump($timestamp);
+		var_dump($isOn);
+		var_dump($tic);
+		var_dump($token);
+		var_dump($engineId);
 
 		require_once "php/inc/databasehandler.inc.php";
 
@@ -36,5 +42,6 @@
 		}
 	}
 	else {
+		header("location: ../../server?token=notvalid");
 		exit();
 	}
