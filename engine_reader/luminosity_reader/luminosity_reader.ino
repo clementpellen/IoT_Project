@@ -65,9 +65,9 @@ void networkConnection() {
         delay(1000);
     }
 
-    WiFiMulti.addAP("SFR-75e0", "QJDXPVQLQDU4");
+    //WiFiMulti.addAP("SFR-75e0", "QJDXPVQLQDU4");
     //WiFiMulti.addAP("SFR-75e0", "VIVELABAC!!");
-    //WiFiMulti.addAP("iPhone de Clement", "deholebranleur");
+    WiFiMulti.addAP("iPhone de Clement", "deholebranleur");
 }
 
 boolean checkConnectionAvailable()

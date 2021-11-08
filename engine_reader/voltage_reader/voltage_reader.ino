@@ -15,6 +15,10 @@
 
 #include "SPIFFS.h"
 
+#include "MD5.h"
+
+#include "time.h"
+
 
 // Déclaration de l'objet Wifi
 WiFiMulti WiFiMulti;
@@ -23,7 +27,15 @@ WiFiMulti WiFiMulti;
 bool connection_established = false;
 
 // Déclaration de l'identifiant de la machine
-const int engine_id = 1;
+const unsigned int engine_id = 1;
+
+// Déclaration du tic d'unicité de la requête
+unsigned int tic = 0;
+
+//déclaration des variables de connexion au serveur du timestamp
+const char* ntpServer = "pool.ntp.org";
+const long  gmtOffset_sec = 0;
+const int   daylightOffset_sec = 3600;
 
 // Déclaration du pin chargé de lire la valeur de la tension 
 // de la partie commande de la machine
@@ -65,9 +77,7 @@ void networkConnection() {
         delay(1000);
     }
 
-    //WiFiMulti.addAP("SFR-75e0", "QJDXPVQLQDU4");
-    //WiFiMulti.addAP("SFR-75e0", "VIVELABAC!!");
-    WiFiMulti.addAP("iPhone de Clement", "deholebranleur");
+    WiFiMulti.addAP("iPhone de Clement", "ABCD1234");
 }
 
 boolean checkConnectionAvailable()
@@ -90,19 +100,39 @@ boolean checkConnectionWasEstablished() {
       return false;
 }
 
+String defineHeaderRequest() {
+  String header = "";
+  header += "token=";
+  header += String(generateToken());
+  header += "&tic=";
+  header += String(tic);
+  header += "&engine_id=";
+  header += String(engine_id);
+  header += "&is_on=";
+  header += String(engine_state);
+
+  return header;
+}
 
 void sendDataToServer(String server_request)
 {
 
     HTTPClient http;
 
+    String header;
+
     Serial.print("[HTTP] begin...\n");
     // configure traged server and url
     http.begin(server_request); //HTTPS
 
-    Serial.print("[HTTP] GET...\n");
+    Serial.print("[HTTP] POST...\n");
     // start connection and send HTTP header
-    int httpCode = http.GET();
+    // Specify content-type header
+    http.addHeader("Content-Type", "text/plain");
+    header = defineHeaderRequest();
+    //header = "";
+    int httpCode = http.POST(header);
+    //int httpCode = http.GET();
 
     // httpCode will be negative on error
     if (httpCode > 0)
@@ -118,14 +148,46 @@ void sendDataToServer(String server_request)
             Serial.println("");
             Serial.println("Inclusion réussie");
             Serial.println(server_request);
+            Serial.println(header);
             Serial.println("");
         }
     }
     else
     {
-        Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
+        Serial.printf("[HTTP] POST... failed, error: %s\n", http.errorToString(httpCode).c_str());
     }
 }
+
+
+
+//////////////////////////
+//                      //
+//        HASHAGE       //
+//                      //
+//////////////////////////
+
+String generateToken() {
+  String key_string = "iotprojet";
+  key_string += String(tic);
+  //Serial.println(key_string);
+  char key[key_string.length()+1];
+  key_string.toCharArray(key, key_string.length()+1);
+  //Serial.println(key);
+  unsigned char* hash=MD5::make_hash(key);
+  //generate the digest (hex encoding) of our hash
+  char *md5str = MD5::make_digest(hash, 16);
+  //print it on our serial monitor
+  //Serial.println(md5str);
+  String md5string = md5str;
+  //Serial.println(md5string);
+  //Give the Memory back to the System if you run the md5 Hash generation in a loop
+  free(md5str);
+  //free dynamically allocated 16 byte hash from make_hash()
+  free(hash);
+
+  return String(md5string);
+}
+
 
 
 
@@ -223,12 +285,11 @@ void initSave() {
     Serial.println("Error : Initialisation Sauvegarde");
   }
 
-  //eraseSave("/local_save_data.txt");
+  eraseSave("/local_save_data.txt");
 }
 
 void saveRequest(String file_name, String server_request) {
   
-  //File file_data = SPIFFS.open(file_name, FILE_WRITE);
   File file_data = SPIFFS.open(file_name, FILE_APPEND);
 
   if(!file_data){
@@ -362,15 +423,9 @@ void showEngineState() {
 }
 
 void showDefaultConnection() {
-  turnOffAllLeds();
-
-  delay(300);
-
   digitalWrite(red_led_output, HIGH);
   digitalWrite(green_led_output, HIGH);
   digitalWrite(blue_led_output, LOW);
-
-  delay(1000);
 }
 
 void showConnectionEstablished() {
@@ -434,8 +489,6 @@ void loop() {
       String server_request = "https://corner.soccer/iot/server.php";
     
       defineEngineState();
-
-      // Ajouter ici les variables à passer dans l'url
       
       sendDataToServer(server_request);
 
@@ -448,7 +501,7 @@ void loop() {
 
     connection_established = false;
 
-    //showDefaultConnection();
+    showDefaultConnection();
 
     Serial.println("Défaut de connexion !");
     
@@ -458,13 +511,13 @@ void loop() {
       String server_request = "https://corner.soccer/iot/server.php";
     
       defineEngineState();
-
-      // Ajouter ici les variables à passer dans l'url
       
       saveRequest("/local_save_data.txt", server_request); 
 
     }
   }
+
+  ++tic;
 
   delay(1000);
   
