@@ -230,7 +230,7 @@
 				if($time_range["is_on"]) {
 					$bufferOn = strtotime($time_range["timestamp"]);
 					if($bufferOff != 0) {
-						$totalOff = $bufferOn - $bufferOff;
+						$totalOff += ($bufferOn - $bufferOff);
 					}
 					$lastState = true;
 				}
@@ -238,21 +238,21 @@
 				else {
 					$bufferOff = strtotime($time_range["timestamp"]);
 					if($bufferOn != 0) {
-						$totalOn = $bufferOff - $bufferOn;
+						$totalOn += ($bufferOff - $bufferOn);
 					}
 					$lastState = false;
 				}
 			}
 
 			if($lastState) {
-				$totalOn = time() - $bufferOn;
+				$totalOn += time() - $bufferOn;
 			}
 			else {
-				$totalOff = time() - $bufferOff;
+				$totalOff += time() - $bufferOff;
 			}
 
-			$pourcentage = $totalOn / $totalOff;
-			$pourcentage = number_format($pourcentage, 1, '.', '');
+			$pourcentage = 100 * ($totalOn / $totalOff) ;
+			$pourcentage = number_format($pourcentage, 2, '.', '');
 		}
 		return $pourcentage;
 	}
