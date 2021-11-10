@@ -16,13 +16,7 @@
 		
 		$engineId = intval($_POST["engine_id"]);
 		$isOn = intval($_POST["is_on"]);
-		$timestamp = date("Y-m-d h:m:s",time());
-
-		var_dump($timestamp);
-		var_dump($isOn);
-		var_dump($tic);
-		var_dump($token);
-		var_dump($engineId);
+		$timestamp = date("Y-m-d H:i:s",time());
 
 		require_once "php/inc/databasehandler.inc.php";
 
