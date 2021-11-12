@@ -1,6 +1,0 @@
-Notre projet contient 3 fonctionnalités principales : 
-- Lecture de la tension
-- Lecture de la luminosité
-- Lecture du mouvement
-
-Chacun des codes correspond à une fonctionnalité
