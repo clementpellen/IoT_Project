@@ -10,6 +10,7 @@
 
 #include <WiFi.h>
 #include <WiFiMulti.h>
+#include <PubSubClient.h>
 
 #include <HTTPClient.h>
 
@@ -22,8 +23,15 @@
 #include "time.h"
 
 
+const char* ssid = "SFR-75e0";
+const char* password = "QJDXPVQLQDU4";
+const char* mqtt_server = "192.168.0.25";
+
+
 // Déclaration de l'objet Wifi
 WiFiMulti WiFiMulti;
+
+// Déclaration de l'objet Wifi
 
 // Déclaration de la variable vérifiant si la connexion est établie
 bool connection_established = false;
@@ -213,6 +221,13 @@ String generateToken() {
 
   return String(md5string);
 }
+
+
+//////////////////////////
+//                      //
+//         MQTT         //
+//                      //
+//////////////////////////
 
 
 
