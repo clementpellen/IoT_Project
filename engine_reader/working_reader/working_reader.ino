@@ -31,13 +31,16 @@ const char* mqtt_server = "192.168.0.25";
 // Déclaration de l'objet Wifi
 WiFiMulti WiFiMulti;
 
+WiFiClient espClient;
+PubSubClient client(espClient);
+
 // Déclaration de l'objet Wifi
 
 // Déclaration de la variable vérifiant si la connexion est établie
 bool connection_established = false;
 
 // Déclaration de l'identifiant de la machine
-const unsigned int engine_id = 3;
+unsigned int engine_id = 3;
 
 // Déclaration du tic d'unicité de la requête
 unsigned int tic = 0;
@@ -116,7 +119,7 @@ void networkConnection() {
         delay(1000);
     }
 
-    WiFiMulti.addAP("iPhone de Clement", "ABCD1234");
+    WiFiMulti.addAP(ssid, password);
 }
 
 boolean checkConnectionAvailable()
@@ -229,7 +232,100 @@ String generateToken() {
 //                      //
 //////////////////////////
 
+void setup_wifi() {
 
+  delay(10);
+  // We start by connecting to a WiFi network
+  Serial.println();
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  randomSeed(micros());
+
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+}
+
+void callback(char* topic, byte* payload, unsigned int length) {
+
+  String request = "";
+  
+  Serial.print("Message arrived [");
+  Serial.print(topic);
+  Serial.print("] ");
+  for (int i = 0; i < length; i++) {
+    Serial.print((char)payload[i]);
+    request += (char)payload[i];
+  }
+  Serial.println();
+
+  modifyEngineId(request);
+  
+}
+
+void modifyEngineId(String request) {
+
+  char new_engine_id = request[request.length() -1 -2];
+
+  Serial.println();
+  Serial.println("    **********************");
+  Serial.println("    MODIFICATION DU CAPTEUR UTILISE");
+  
+  switch(new_engine_id) {
+    case '1':
+      engine_id = 1;
+      Serial.println("    Affichage de la machine avec capteur de TENSION");
+      break;
+    case '2':
+      Serial.println("    Affichage de la machine avec capteur de LUMINOSITE");
+      engine_id = 2;
+      break;
+    case '3':
+      Serial.println("    Affichage de la machine avec capteur de MOUVEMENT");
+      engine_id = 3;
+      break;
+
+    default:
+      break;
+  }
+
+  Serial.println("    **********************");
+  Serial.println();
+}
+
+void reconnect() {
+  // Loop until we're reconnected
+  while (!client.connected()) {
+    Serial.print("Attempting MQTT connection...");
+    // Create a random client ID
+    String clientId = "ESP8266Client-";
+    clientId += String(random(0xffff), HEX);
+    // Attempt to connect
+    if (client.connect(clientId.c_str())) {
+      Serial.println("connected");
+      // Once connected, publish an announcement...
+      // client.publish("outTopic", "hello world");
+      // ... and resubscribe
+      client.subscribe("inTopic");
+    } else {
+      Serial.print("failed, rc=");
+      Serial.print(client.state());
+      Serial.println(" try again in 5 seconds");
+      // Wait 5 seconds before retrying
+      delay(5000);
+    }
+  }
+}
 
 
 //////////////////////////
@@ -746,6 +842,10 @@ void setup() {
 
   networkConnection();
 
+  setup_wifi();
+  client.setServer(mqtt_server, 1883);
+  client.setCallback(callback);
+
   initMPUConnection();
 
   initSave();
@@ -758,6 +858,11 @@ void setup() {
 void loop() {
 
   displayChangeEngineState();
+
+  if (!client.connected()) {
+    reconnect();
+  }
+  client.loop();
 
   if(checkConnectionAvailable()) {
 
