@@ -3,8 +3,8 @@
 Bienvenue sur notre projet d'IoT d'optimisation de production d'usine
 
 Auteurs :
-DESAUTEL Quentin
-PELLEN Clément
+- DESAUTEL Quentin
+- PELLEN Clément
 
 Les objectifs principaux de ce système sont :
 - la gestion d'usine
@@ -30,7 +30,7 @@ dans engine_reader 📁,
 
 # Le Montage
 
-1 - Le processeur et la connexion : un Esp32
-2 - La luminosité : une photorésistance
-3 - Le mouvement : un MPU6050
+- 1 - Le processeur et la connexion : un Esp32
+- 2 - La luminosité : une photorésistance
+- 3 - Le mouvement : un MPU6050
 
