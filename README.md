@@ -3,13 +3,13 @@
 Bienvenue sur notre projet d'IoT d'optimisation de production d'usine
 
 Auteurs :
-# DESAUTEL Quentin
-# PELLEN Clément
+DESAUTEL Quentin
+PELLEN Clément
 
 Les objectifs principaux de ce système sont :
-    - la gestion d'usine
-    - l'optimisation de production 
-    - la maintenance prédictive
+- la gestion d'usine
+- l'optimisation de production 
+- la maintenance prédictive
 
 Nous permettons avec notre solution à un gérant d'usine ou d'atelier de connaître la rentabilité de chacune de ses machines.
 Le système embarqué étudie l'état de fonctionnement d'une machine (Allumée / Eteinte).
